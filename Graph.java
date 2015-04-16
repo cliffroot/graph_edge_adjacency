@@ -1,5 +1,7 @@
 package nifty.packag.plz;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -349,6 +351,30 @@ public class Graph {
 		}
 
 		previousVertex -= last.vertices.length;
+	}
+
+	public void putToFile(String string) {
+		try (FileOutputStream fos = new FileOutputStream(new File(string))) {
+			for (Vertex vertex: vertices) {
+				fos.write((vertex.value + ": ").getBytes());
+				StringBuilder sb = new StringBuilder();
+				for (Edge edge: edges) {
+					if (edge.start.equals(vertex)) {
+						sb.append(edge.end.value + ",");
+					}
+					if (edge.end.equals(vertex)) {
+						sb.append(edge.start.value + ",");
+					}
+				}
+				sb.reverse();
+				sb.replace(0, 1, "\n");
+				sb.reverse();
+
+				fos.write(sb.toString().getBytes());
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 }

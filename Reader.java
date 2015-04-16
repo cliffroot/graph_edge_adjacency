@@ -29,6 +29,8 @@ public class Reader {
 		}
 
 		Graph res = doOneRule(new Graph(), edgeAdjacency, names, 0);
+
+		res.putToFile("/Users/cliffroot/Documents/chewchew.txt");
 		System.out.println("Result: " + res);
 	}	
 
