@@ -22,15 +22,17 @@ public class Reader {
 		Set<Integer> lonelyVertices = new HashSet<Integer>();
 		processLines(lines, edgeAdjacency, lonelyVertices);
 
-		List<Integer> names=  new ArrayList<Integer> (lines.length);
+		List<Integer> names=  new ArrayList<Integer> (edgeAdjacency.entrySet().size());
 
-		for (int i = 0; i < lines.length; i++) {
+		for (int i = 0; i < edgeAdjacency.entrySet().size(); i++) {
 			names.add(i);
 		}
 
 		Graph res = doOneRule(new Graph(), edgeAdjacency, names, 0);
 
-		res.putToFile("/Users/cliffroot/Documents/chewchew.txt");
+		res.setLonelyVertices(lonelyVertices);
+
+		res.putToFile("/Users/cliffroot/Documents/chewche1.txt");
 		System.out.println("Result: " + res);
 	}	
 
@@ -51,7 +53,7 @@ public class Reader {
 			if (d < MIN_DISTANCE) {
 				MIN_DISTANCE = d;
 			}
-			System.out.println("M:" + MIN_DISTANCE + ", c: " + d) ;
+			//System.out.println("M:" + MIN_DISTANCE + ", c: " + d) ;
 			Graph g = doOneRule(copyGraph, edgeAdjacency, newNames, level + 1);
 			if (g != null) {
 				return g;
@@ -81,7 +83,8 @@ public class Reader {
 		for (int i = 0; i < lines.length; i++) {
 			String line = lines[i];
 			String [] tokens = line.split(" ");
-			if (tokens.length == 0) {
+			if (tokens.length == 1) {
+				System.out.println("process lonely vertex!!");
 				processLonelyVertex(tokens, lonelyVertices);
 			} else {
 				processEdgeAdjacency(tokens, edges, i);
@@ -107,6 +110,7 @@ public class Reader {
 	private static void processLonelyVertex(String[] tokens, Set<Integer> vertices) {
 		assert(tokens != null && tokens.length == 1);
 		vertices.add(Integer.valueOf(tokens[0]));
+		System.out.println("LV: " + vertices);
 	}
 
 	private static String[] readFromFile (String name) {

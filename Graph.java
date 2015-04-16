@@ -16,7 +16,7 @@ import java.util.Set;
 
 public class Graph {
 
-	public final static Integer DEFAULT_VERTEX = 0;
+	public final static Integer DEFAULT_VERTEX = -1;
 	private Integer previousVertex = DEFAULT_VERTEX;
 
 	Set<Vertex> vertices = new HashSet<Vertex>();
@@ -180,7 +180,7 @@ public class Graph {
 	}
 
 	private Vertex getNewVertex () {
-		return new Vertex(previousVertex++);
+		return new Vertex(++previousVertex);
 	}
 
 	public List<Integer> getEdges () {
@@ -354,27 +354,57 @@ public class Graph {
 	}
 
 	public void putToFile(String string) {
+		createMapping();
 		try (FileOutputStream fos = new FileOutputStream(new File(string))) {
 			for (Vertex vertex: vertices) {
-				fos.write((vertex.value + ": ").getBytes());
+				if (lonelyToNewMapping.get(vertex.value) == null) {
+					fos.write((vertex.value + ": ").getBytes());
+				} else {
+					fos.write((lonelyToNewMapping.get(vertex.value) + ": ").getBytes());
+				}
 				StringBuilder sb = new StringBuilder();
 				for (Edge edge: edges) {
 					if (edge.start.equals(vertex)) {
-						sb.append(edge.end.value + ",");
+						if (lonelyToNewMapping.get(edge.end.value) == null) {
+							sb.append(edge.end.value + ",");
+						} else {
+							sb.append(lonelyToNewMapping.get(edge.end.value) + ",");
+						}
 					}
 					if (edge.end.equals(vertex)) {
-						sb.append(edge.start.value + ",");
+						if (lonelyToNewMapping.get(edge.start.value) == null) {
+							sb.append(edge.start.value + ",");
+						} else {
+							sb.append(lonelyToNewMapping.get(edge.start.value) + ",");
+						}
 					}
 				}
 				sb.reverse();
 				sb.replace(0, 1, "\n");
 				sb.reverse();
 
+
 				fos.write(sb.toString().getBytes());
+			}
+			for (Integer integer: lonelyVertices) {
+				fos.write ((integer + ": N\n").getBytes());
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+	}
+
+	private Set<Integer> lonelyVertices;
+	private Map<Integer, Integer> lonelyToNewMapping = new HashMap<Integer, Integer>();
+
+	private void createMapping () {
+		for (Integer v: lonelyVertices) {
+			lonelyToNewMapping.put(v, getNewVertex().value);
+		}
+	}
+
+	public void setLonelyVertices(Set<Integer> lonelyVertices) {
+		this.lonelyVertices = lonelyVertices;
 	}
 
 }
